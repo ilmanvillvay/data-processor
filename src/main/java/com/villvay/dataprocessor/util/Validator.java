@@ -5,7 +5,6 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
-import com.villvay.dataprocessor.DataStreamJob;
 
 import java.util.Set;
 
@@ -15,7 +14,10 @@ import java.util.Set;
  */
 public class Validator {
 
-    public static Set<ValidationMessage> validateJson(JsonNode jsonNode, String jsonSchemaPath) {
+    private Validator() {
+    }
+
+    public static Set<ValidationMessage> validateJsonByJsonSchema(JsonNode jsonNode, String jsonSchemaPath) {
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V4);
         JsonSchema jsonSchema = factory.getSchema(Validator.class.getResourceAsStream(jsonSchemaPath));
         return jsonSchema.validate(jsonNode);

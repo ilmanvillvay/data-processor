@@ -1,17 +1,11 @@
-package com.villvay.dataprocessor.executor;
+package com.villvay.dataprocessor.processor;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.networknt.schema.ValidationMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.villvay.dataprocessor.dto.GroupPayload;
-import com.villvay.dataprocessor.util.Extractor;
-import com.villvay.dataprocessor.util.Transformer;
-import com.villvay.dataprocessor.util.Validator;
+import com.villvay.dataprocessor.mapper.DataMapper;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.api.connector.sink2.Sink;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
@@ -19,6 +13,7 @@ import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDe
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.connectors.activemq.AMQSink;
 import org.apache.flink.streaming.connectors.activemq.AMQSinkConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -27,24 +22,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author Ilman Iqbal
  * 11/15/2023
  */
-public class GroupExecutor {
+public class GroupProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GroupExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GroupProcessor.class);
 
     private ParameterTool groupParameters;
 
-    public GroupExecutor(StreamExecutionEnvironment env) {
-        loadGroupConfig();
-        configureGroupExecutor(env);
+    public GroupProcessor() {
+        loadConfig();
+        execute();
     }
 
-    private void loadGroupConfig() {
+    private void loadConfig() {
         String propertiesFilePath = "src/main/resources/file_configs/group.properties";
         try {
             groupParameters = ParameterTool.fromPropertiesFile(propertiesFilePath);
@@ -55,36 +49,34 @@ public class GroupExecutor {
         }
     }
 
-    private void configureGroupExecutor(StreamExecutionEnvironment env) {
-        DataStreamSource<String> kafkaSource = env.fromSource(this.getSource(), WatermarkStrategy.noWatermarks(), "Kafka Source");
+    private void execute() {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-//        todo: the following map function should get this value like this, not in a hard coded way
-//        this.groupParameters.get("sink[0].json_schema");
+        DataStreamSource<String> kafkaSource = env.fromSource(this.getSource(), WatermarkStrategy.noWatermarks(),
+                "Kafka Source");
 
-        SingleOutputStreamOperator<GroupPayload> stream = kafkaSource.map((MapFunction<String, GroupPayload>) value -> {
-
-                    JsonNode jsonValue = Extractor.getJsonNode(value, "payload");
-                    Set<ValidationMessage> groupErrors = Validator.validateJson(jsonValue, "/json_schemas/group_activemq.json");
-
-                    if (CollectionUtils.isNotEmpty(groupErrors)) {
-                LOG.error(groupErrors.toString());
-                        return null;
-                    } else {
-                        return Transformer.mapJsonToPojo(jsonValue, GroupPayload.class);
-                    }
-                })
-                .filter(Objects::nonNull);
+        SingleOutputStreamOperator<String> stream = kafkaSource.map(new DataMapper<>(GroupPayload.class,
+                        groupParameters.get("sinks.activemq.json_schema"), "payload"))
+                .returns(GroupPayload.class)
+                .filter(Objects::nonNull)
+                .map(value -> new ObjectMapper().writeValueAsString(value));
 
         stream.print();
 
-        stream.sinkTo((Sink<GroupPayload>) this.getSink());
+        stream.addSink(this.getSink());
+
+        try {
+            env.execute("Group Processor Job");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
-    private AMQSink<String> getSink() {
+    private SinkFunction<String> getSink() {
         AMQSinkConfig<String> sinkConnector = new AMQSinkConfig.AMQSinkConfigBuilder<String>()
-                .setConnectionFactory(new ActiveMQConnectionFactory(groupParameters.get("sink[0].url")))
-                .setDestinationName("some_queue")
+                .setConnectionFactory(new ActiveMQConnectionFactory(groupParameters.get("sinks.activemq.url")))
+                .setDestinationName(groupParameters.get("sinks.activemq.queue_name"))
                 .setSerializationSchema(new SimpleStringSchema())
                 .build();
 
@@ -94,7 +86,7 @@ public class GroupExecutor {
     private KafkaSource<String> getSource() {
         OffsetsInitializer offsetsInitializer;
 
-        switch (groupParameters.get("kafka.consumer.offset")) {
+        switch (groupParameters.get("source.kafka.consumer.offset")) {
             case "earliest":
                 offsetsInitializer = OffsetsInitializer.earliest();
                 break;
@@ -109,9 +101,9 @@ public class GroupExecutor {
         }
 
         return KafkaSource.<String>builder()
-                .setBootstrapServers(groupParameters.get("kafka.url"))
-                .setTopics(groupParameters.get("kafka.topic"))
-                .setGroupId(groupParameters.get("kafka.consumer.group-id"))
+                .setBootstrapServers(groupParameters.get("source.kafka.url"))
+                .setTopics(groupParameters.get("source.kafka.topic"))
+                .setGroupId(groupParameters.get("source.kafka.consumer.group-id"))
                 .setStartingOffsets(offsetsInitializer)
                 .setDeserializer(KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
                 .build();

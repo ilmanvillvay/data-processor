@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Extractor {
 
+    private Extractor() {
+    }
+
     public static JsonNode getJsonNode(String jsonString, String... jsonFields) {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = null;

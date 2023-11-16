@@ -18,19 +18,12 @@
 
 package com.villvay.dataprocessor;
 
-import com.villvay.dataprocessor.executor.GroupExecutor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import com.villvay.dataprocessor.processor.GroupProcessor;
 
-@Slf4j
 public class DataStreamJob {
 
-    public static void main(String[] args) throws Exception {
-        final StreamExecutionEnvironment env =
-                StreamExecutionEnvironment.getExecutionEnvironment();
+    public static void main(String[] args) {
+        new GroupProcessor();
 
-        new GroupExecutor(env);
-
-        env.execute("Data Stream Job");
     }
 }

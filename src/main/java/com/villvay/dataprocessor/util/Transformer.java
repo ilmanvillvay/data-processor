@@ -10,6 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Transformer {
 
+    private Transformer() {
+    }
+
     public static <T> T mapJsonToPojo(JsonNode jsonNode, Class<T> targetType) {
         try {
             return new ObjectMapper().treeToValue(jsonNode, targetType);
