@@ -35,7 +35,7 @@ under the License.
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
 		<log4j.version>2.17.1</log4j.version>
-		<activemq-client.version>5.16.3</activemq-client.version>
+		<jsonschema2pojo-maven-plugin.version>1.2.1</jsonschema2pojo-maven-plugin.version>
 	</properties>
 
 	<repositories>
@@ -172,6 +172,51 @@ under the License.
 									<mainClass>com.villvay.dataprocessor.DataStreamJob</mainClass>
 								</transformer>
 							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jsonschema2pojo</groupId>
+				<artifactId>jsonschema2pojo-maven-plugin</artifactId>
+				<version>${jsonschema2pojo-maven-plugin.version}</version>
+				<configuration>
+					<sourceType>jsonschema</sourceType>
+					<outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+					<outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
+					<annotationStyle>jackson2</annotationStyle>
+					<generateBuilders>true</generateBuilders>
+					<initializeCollections>true</initializeCollections>
+					<useTitleAsClassname>true</useTitleAsClassname>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-for-all-json-schemas</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<targetPackage>com.villvay.dataprocessor.dto</targetPackage>
+							<sourceDirectory>${basedir}/src/main/resources/json_schemas</sourceDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/java</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>

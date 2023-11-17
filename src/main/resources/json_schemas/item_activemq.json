@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "ItemDto",
+  "description": "An item",
+  "type": "object",
+  "properties": {
+    "WebActive": {
+      "type": "string"
+    },
+    "Vendor#": {
+      "type": "string",
+      "javaName": "vendorNo"
+    },
+    "Material#": {
+      "type": "string",
+      "javaName": "materialNo"
+    },
+    "SAP#": {
+      "type": "string",
+      "javaName": "sapNo"
+    },
+    "MFRPart#": {
+      "type": "string",
+      "javaName": "mfrPartNo"
+    },
+    "Description": {
+      "type": "string"
+    },
+    "UOM": {
+      "type": "string"
+    },
+    "Rank": {
+      "type": "string"
+    },
+    "Status": {
+      "type": "string"
+    },
+    "ChangeDate": {
+      "type": "string"
+    },
+    "Weight": {
+      "type": "string"
+    },
+    "UnitOfWeight": {
+      "type": "string"
+    },
+    "MaterialGroup": {
+      "type": "string"
+    },
+    "MaterialType": {
+      "type": "string"
+    },
+    "Direct": {
+      "type": "string"
+    },
+    "P65Carcenogen": {
+      "type": "string"
+    },
+    "P65Birth": {
+      "type": "string"
+    },
+    "P65Wood": {
+      "type": "string"
+    },
+    "MinimumQuantity": {
+      "type": "string"
+    },
+    "QuantityByIncrements": {
+      "type": "string"
+    },
+    "BoxQuantity": {
+      "type": "string"
+    },
+    "UPCCode": {
+      "type": "string"
+    },
+    "Hazardous": {
+      "type": "string"
+    },
+    "MaterialGroupPackagingMaterial": {
+      "type": "string"
+    },
+    "LaminateSize": {
+      "type": "string"
+    },
+    "LaminateColor": {
+      "type": "string"
+    },
+    "LaminateGrade": {
+      "type": "string"
+    },
+    "LaminateFinish": {
+      "type": "string"
+    },
+    "Document": {
+      "type": "string"
+    },
+    "CreateDate": {
+      "type": "string"
+    }
+  }
+}

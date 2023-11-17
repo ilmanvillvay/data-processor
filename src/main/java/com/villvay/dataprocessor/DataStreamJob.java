@@ -18,12 +18,11 @@
 
 package com.villvay.dataprocessor;
 
-import com.villvay.dataprocessor.processor.GroupProcessor;
+import com.villvay.dataprocessor.processor.impl.GroupProcessor;
 
 public class DataStreamJob {
 
     public static void main(String[] args) {
-        new GroupProcessor();
-
+        new GroupProcessor().start();
     }
 }

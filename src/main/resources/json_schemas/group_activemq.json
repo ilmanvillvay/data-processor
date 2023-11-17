@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Group",
+  "title": "GroupDto",
   "description": "A group",
   "type": "object",
   "properties": {
@@ -11,7 +11,8 @@
       "type": "string"
     },
     "SAP#": {
-      "type": "string"
+      "type": "string",
+      "javaName": "sapNo"
     },
     "GroupTitle": {
       "type": "string"
