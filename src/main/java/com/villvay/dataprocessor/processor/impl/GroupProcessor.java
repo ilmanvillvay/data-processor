@@ -11,6 +11,7 @@ import com.villvay.dataprocessor.sink.impl.ActiveMqStreamSink;
 import com.villvay.dataprocessor.source.StreamSourceFactory;
 import com.villvay.dataprocessor.source.impl.KafkaStreamSource;
 import com.villvay.dataprocessor.util.StreamUtils;
+import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Ilman Iqbal
@@ -57,10 +59,25 @@ public class GroupProcessor implements StreamProcessor {
 
         stream.addSink(activeMqStreamSink.getSink(this.groupParameters));
 
+        stream.print();
+
         LOG.info("Successfully assigned kafka sink connector for group processor");
 
         try {
-            env.execute("Group Processor Job");
+            JobExecutionResult groupProcessorJob = env.execute("Group Processor Job");
+            System.out.println("=======================================================================================");
+            System.out.println("=======================================================================================");
+            System.out.println("=======================================================================================");
+            System.out.println("=======================================================================================");
+            System.out.println("=======================================================================================");
+            System.out.println("The job took " + groupProcessorJob.getNetRuntime(TimeUnit.MILLISECONDS) + " ms to execute");
+
+            LOG.info("=================================================================================================");
+            LOG.info("=================================================================================================");
+            LOG.info("=================================================================================================");
+            LOG.info("=================================================================================================");
+            LOG.info("=================================================================================================");
+            LOG.info("The job took " + groupProcessorJob.getNetRuntime(TimeUnit.MILLISECONDS) + " ms to execute");
         } catch (Exception e) {
             throw new DataProcessorException("Error when executing group processor job", e);
         }

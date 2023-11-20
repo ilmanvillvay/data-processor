@@ -31,7 +31,7 @@ public class DataMapper<T> implements MapFunction<String, T> {
 
     @Override
     public T map(String value) {
-
+        long start = System.currentTimeMillis();
         JsonNode jsonValue = StreamUtils.getJsonNodeByFiledName(value, jsonFields);
         Set<ValidationMessage> groupErrors = StreamUtils.validateJsonByJsonSchema(jsonValue, jsonSchema);
 
@@ -40,7 +40,10 @@ public class DataMapper<T> implements MapFunction<String, T> {
             LOG.error("Errors {}", groupErrors);
             return null;
         } else {
-            return StreamUtils.mapJsonToPojo(jsonValue, pojoClass);
+            T pojo = StreamUtils.mapJsonToPojo(jsonValue, pojoClass);
+            long time = System.currentTimeMillis() - start;
+            LOG.warn("============== time taken in millis for mapping {}", time);
+            return pojo;
         }
     }
 }
