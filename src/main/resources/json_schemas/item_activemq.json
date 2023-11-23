@@ -5,98 +5,98 @@
   "type": "object",
   "properties": {
     "WebActive": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Vendor#": {
-      "type": "string",
+      "type": ["string", "null"],
       "javaName": "vendorNo"
     },
     "Material#": {
-      "type": "string",
+      "type": ["string", "null"],
       "javaName": "materialNo"
     },
     "SAP#": {
-      "type": "string",
+      "type": ["string", "null"],
       "javaName": "sapNo"
     },
     "MFRPart#": {
-      "type": "string",
+      "type": ["string", "null"],
       "javaName": "mfrPartNo"
     },
     "Description": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "UOM": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Rank": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Status": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "ChangeDate": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Weight": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "UnitOfWeight": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "MaterialGroup": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "MaterialType": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Direct": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "P65Carcenogen": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "P65Birth": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "P65Wood": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "MinimumQuantity": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "QuantityByIncrements": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "BoxQuantity": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "UPCCode": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Hazardous": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "MaterialGroupPackagingMaterial": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "LaminateSize": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "LaminateColor": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "LaminateGrade": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "LaminateFinish": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "Document": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "CreateDate": {
-      "type": "string"
+      "type": ["string", "null"]
     }
   }
 }
