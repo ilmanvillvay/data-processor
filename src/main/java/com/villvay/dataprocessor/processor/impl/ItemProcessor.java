@@ -74,7 +74,7 @@ public class ItemProcessor implements StreamProcessor {
         DataProcessor<ItemDto> itemDataProcessor = new DataProcessor<>(ItemDto.class,
                 itemParameters.get("sinks.activemq.json_schema"), "payload");
 
-        SingleOutputStreamOperator<ItemDto> itemDtoStream = kafkaSource.uid("item-kafka-soruce")
+        SingleOutputStreamOperator<ItemDto> itemDtoStream = kafkaSource.uid("item-kafka-source")
                 .setParallelism(4)
                 .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(10)))
                 .allowedLateness(Time.seconds(2))

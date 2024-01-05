@@ -6,5 +6,6 @@ package com.villvay.dataprocessor.enums;
  */
 public enum ConnectorType {
     KAFKA,
-    ACTIVE_MQ
+    ACTIVE_MQ,
+    HTTP_ASYNC
 }

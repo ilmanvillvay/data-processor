@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "RelatedItemDto",
+  "description": "A related item",
+  "type": "object",
+  "properties": {
+    "GroupCode": {
+      "type": ["string", "null"]
+    },
+    "SKU": {
+      "type": ["string", "null"]
+    },
+    "GroupHeading": {
+      "type": ["string", "null"]
+    },
+    "GroupHeadingRank": {
+      "type": ["string", "null"]
+    },
+    "Status": {
+      "type": ["string", "null"]
+    }
+  }
+}
