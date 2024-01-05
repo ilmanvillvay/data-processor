@@ -11,11 +11,15 @@ import com.villvay.dataprocessor.sink.impl.HttpAsyncStreamSink;
 import com.villvay.dataprocessor.source.StreamSourceFactory;
 import com.villvay.dataprocessor.source.impl.KafkaStreamSource;
 import com.villvay.dataprocessor.util.StreamUtils;
+import lombok.SneakyThrows;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +57,35 @@ public class RelatedItemProcessor implements StreamProcessor {
                         relatedItemParameters.get("sinks.http-async.json_schema"), "payload"))
                 .returns(RelatedItemDto.class)
                 .filter(Objects::nonNull)
-                .map(value -> new ObjectMapper().writeValueAsString(value));
+                .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+                .aggregate(new AggregateFunction<RelatedItemDto, StringBuilder, String>() {
+
+                    @Override
+                    public StringBuilder createAccumulator() {
+                        return new StringBuilder("[");
+                    }
+
+                    @SneakyThrows
+                    @Override
+                    public StringBuilder add(RelatedItemDto value, StringBuilder accumulator) {
+                        if (accumulator.length() > 1) {
+                            accumulator.append(",");
+                        }
+                        accumulator.append(new ObjectMapper().writeValueAsString(value));
+                        return accumulator;
+                    }
+
+                    @Override
+                    public String getResult(StringBuilder accumulator) {
+                        accumulator.append("]");
+                        return accumulator.toString();
+                    }
+
+                    @Override
+                    public StringBuilder merge(StringBuilder a, StringBuilder b) {
+                        return null;
+                    }
+                });
 
         stream.print();
 

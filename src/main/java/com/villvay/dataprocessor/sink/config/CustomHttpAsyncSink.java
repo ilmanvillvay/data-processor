@@ -44,9 +44,7 @@ public class CustomHttpAsyncSink extends RichSinkFunction<String> {
     public void invoke(String value, Context sinkFunctionContext) throws Exception {
         // Prepare the HTTP request
         Request request = asyncHttpClient.preparePost(endpointUrl)
-                .setBody("[\n" +
-                        value +
-                        "]")
+                .setBody(value)
                 .build();
 
         if (Objects.nonNull(apiKey)) {
